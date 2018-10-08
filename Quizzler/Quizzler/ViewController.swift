@@ -11,7 +11,10 @@ import UIKit
 class ViewController: UIViewController {
     
     //Place your instance variables here
-    
+    let questionBank = QuestionBank()
+    var pickedAnswer : Bool = false
+    var questionIndex : Int = 0
+    var score : Int = 0
     
     @IBOutlet weak var questionLabel: UILabel!
     @IBOutlet weak var scoreLabel: UILabel!
@@ -20,32 +23,71 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    
+        nextQuestion()
     }
 
 
     @IBAction func answerPressed(_ sender: AnyObject) {
-  
+
+        if sender.tag == 1
+        {
+            pickedAnswer = true
+        }else{
+            pickedAnswer = false
+        }
+        
+        checkAnswer()
+    
+        questionIndex += 1
+    
+        nextQuestion()
     }
     
     
     func updateUI() {
       
+        progressLabel.text = "\(questionIndex+1)/13"
+        scoreLabel.text = "Score: \(score)"
+        progressBar.frame.size.width = (view.frame.size.width / 13.0) * CGFloat(questionIndex + 1)
     }
     
 
     func nextQuestion() {
-        
+        if questionIndex <= 12{
+            questionLabel.text = questionBank.list[questionIndex].questionText
+            //Update UI after populating question
+            updateUI()
+        }else{
+            
+            let alert = UIAlertController(title: "Awesome", message: "You've finished all the questions, do you wish to restart?", preferredStyle: .alert)
+            
+            let restartAction = UIAlertAction(title: "Restart", style: .default, handler: { (UIAlertAction) in
+                 self.startOver()
+            })
+            
+            alert.addAction(restartAction)
+            
+            present(alert, animated: true, completion: nil)
+        }
     }
     
     
     func checkAnswer() {
-        
+        let correctAnswer = questionBank.list[questionIndex].answer
+        if correctAnswer == pickedAnswer{
+            ProgressHUD.showSuccess("Correct!")
+            score += 10
+        }else{
+            ProgressHUD.showError("Wrong!")
+        }
     }
     
     
     func startOver() {
-       
+        questionIndex = 0
+        score = 0
+        nextQuestion()
     }
     
 

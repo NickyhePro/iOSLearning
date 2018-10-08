@@ -11,8 +11,5 @@ class Question{
     }
 }
 
-class MainClass{
-    let question = Question(text: "Am I real?", correctAnswer: true)
-}
 
 
